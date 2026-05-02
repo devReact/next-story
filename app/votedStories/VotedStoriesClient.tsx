@@ -5,10 +5,20 @@ import Link from "next/link";
 import { useState } from "react";
 import { Story } from "@/lib/stories";
 
-export default function VotedStoriesClient({ stories }: { stories: Story[] }) {
-  const [selectedStories, setSelectedStories] = useState<Story[]>([]);
+type VotedStoriesClientProps = {
+  stories: Story[];
+  initialSelectedStories: Story[];
+};
 
-  const addStory = (story: Story) => {
+export default function VotedStoriesClient({
+  stories,
+  initialSelectedStories,
+}: VotedStoriesClientProps) {
+  const [selectedStories, setSelectedStories] = useState<Story[]>(
+    initialSelectedStories,
+  );
+
+  const addStory = async (story: Story) => {
     const alreadySelected = selectedStories.some(
       (selectedStory) => selectedStory.id === story.id,
     );
@@ -17,13 +27,51 @@ export default function VotedStoriesClient({ stories }: { stories: Story[] }) {
       return;
     }
 
+    const previousStories = selectedStories;
+
     setSelectedStories([...selectedStories, story]);
+
+    try {
+      const response = await fetch("/api/votedStories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(story),
+      });
+
+      if (!response.ok) {
+        setSelectedStories(previousStories);
+        const data = await response.json();
+        console.error(data.message || "Unable to save voted story.");
+      }
+    } catch (error) {
+      setSelectedStories(previousStories);
+      console.error("Something went wrong while saving voted story:", error);
+    }
   };
 
-  const removeStory = (id: string) => {
+  const removeStory = async (id: string) => {
+    const previousStories = selectedStories;
+
     setSelectedStories(
       selectedStories.filter((selectedStory) => selectedStory.id !== id),
     );
+
+    try {
+      const response = await fetch(`/api/votedStories/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        setSelectedStories(previousStories);
+        const data = await response.json();
+        console.error(data.message || "Unable to remove voted story.");
+      }
+    } catch (error) {
+      setSelectedStories(previousStories);
+      console.error("Something went wrong while removing voted story:", error);
+    }
   };
 
   return (
