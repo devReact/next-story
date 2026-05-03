@@ -46,3 +46,69 @@ next-story/
 │   └── ...
 ├── package.json
 └── README.md
+```
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/devReact/next-story.git
+cd next-story
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+## Environment Variables
+
+Create a `.env.local` file in the root of the project:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+MONGODB_DB=your_database_name
+```
+
+Do not commit `.env.local` to GitHub.
+
+## Run the Development Server
+
+```bash
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:3000
+```
+
+## Available Pages
+
+```text
+/                    Home page
+/stories             Fruit stories list
+/stories/new         Add a new story
+/stories/[id]        Story details
+/stories/[id]/edit   Edit a story
+/votedStories        Favorite fruits selection
+```
+
+## API Routes
+
+```text
+POST   /api/stories
+PATCH  /api/stories/[id]
+DELETE /api/stories/[id]
+
+GET    /api/votedStories
+POST   /api/votedStories
+DELETE /api/votedStories/[id]
+```
+
+## Author
+
+Created by devReact.
